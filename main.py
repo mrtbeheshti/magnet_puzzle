@@ -1,3 +1,4 @@
+from Magnet import Magnet
 from Table import Table as T
 
 src_dir = 'input1_method2.txt'
@@ -13,3 +14,5 @@ while (row := f.readline()):
 f.close()
 table = T(rows_negative, columns_negative, rows_positive, columns_positive,
           table)
+table.solve(0)
+table.print_table()
