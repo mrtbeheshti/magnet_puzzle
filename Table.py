@@ -173,10 +173,34 @@ class Table:
         self.remove_magnet(magnet)
         return possibles
 
+    def forward_checking(self, possible_magnets):
+        possible_positives_in_row = [0] * len(self.rows_positive)
+        possible_negatives_in_row = [0] * len(self.rows_negative)
+        possible_positives_in_column = [0] * len(self.columns_positive)
+        possible_negatives_in_column = [0] * len(self.columns_negative)
+        for magnet in possible_magnets:
+            possible_positives_in_row[magnet.positive_pos['x']] += 1
+            possible_negatives_in_row[magnet.negative_pos['x']] += 1
+            possible_positives_in_column[magnet.positive_pos['y']] += 1
+            possible_negatives_in_column[magnet.negative_pos['y']] += 1
+        for i in range(len(self.rows_negative)):
+            if self.rows_negative[i] > possible_negatives_in_row[
+                    i] or self.rows_positive[i] > possible_positives_in_row[i]:
+                return False
+        for j in range(len(self.columns_negative)):
+            if self.columns_negative[j] > possible_negatives_in_column[
+                    j] or self.columns_positive[
+                        j] > possible_positives_in_column[j]:
+                return False
+        return True
+
     def solve(self, depth):
         if self.is_complete() and self.is_consistent():
             return True
         possible_magnets = self.get_possible_magnets()
+        if depth % 3 == 1:
+            if not self.forward_checking(possible_magnets):
+                return False
         MRV_Asc = self.get_actions_sorted(possible_magnets)
         for magnet in MRV_Asc:
             self.add_magnet(magnet)
